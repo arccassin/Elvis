@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Elvis</string>
+    <string name="tvTrackName">Elvis</string>
+    <string name="tvTrackName_elvis_tutti">Elvis Tutti Frutti is playing</string>
+    <string name="tvTrackName_elvis_rocknroll">Elvis Rock\'n\'Roll is playing</string>
+    <string name="btnStart">Start</string>
+    <string name="btnPause">Pause</string>
+    <string name="btnNext">Next</string>
+</resources>
