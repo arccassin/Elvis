@@ -7,11 +7,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import java.lang.reflect.Field;
+
 public class MainActivity extends AppCompatActivity {
 
-    MediaPlayer mediaPlayer1;
-    MediaPlayer mediaPlayer2;
+    MediaPlayer mediaPlayer;
     TextView tvTrackName;
+    int fieldsPos = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,28 +22,46 @@ public class MainActivity extends AppCompatActivity {
 
         tvTrackName = findViewById(R.id.tvTrackName);
 
-        mediaPlayer1 = MediaPlayer.create(this, R.raw.elvis_tutty_frutty);
-        mediaPlayer2 = MediaPlayer.create(this, R.raw.elvis_rocknroll);
     }
 
     public void onClickStart(View view) {
-        if (mediaPlayer2.isPlaying()) {
-            mediaPlayer2.pause();
+        if (mediaPlayer == null){
+            startNextMediaPlayer();
+        } else {
+            mediaPlayer.start();
         }
-        mediaPlayer1.start();
-        tvTrackName.setText(R.string.tvTrackName_elvis_tutti);
+
     }
 
     public void onClickNext(View view) {
-        if (mediaPlayer1.isPlaying()) {
-            mediaPlayer1.pause();
-            mediaPlayer2.start();
-            tvTrackName.setText(R.string.tvTrackName_elvis_rocknroll);
-        } else if (mediaPlayer2.isPlaying()) {
-            mediaPlayer2.pause();
-            mediaPlayer1.start();
-            tvTrackName.setText(R.string.tvTrackName_elvis_tutti);
-        }
+        mediaPlayer.stop();
+        startNextMediaPlayer();
+    }
 
+    public void startNextMediaPlayer(){
+        Field field = getNextRowField();
+        if (field != null) {
+            try {
+                mediaPlayer = MediaPlayer.create(this, field.getInt(null));
+                mediaPlayer.start();
+                String text = field.getName() + " is playing";
+                tvTrackName.setText(text);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public Field getNextRowField() {
+        Field[] fields = R.raw.class.getFields();
+        Field field;
+        field = fields[fieldsPos];
+        fieldsPos = (fieldsPos == fields.length - 1) ? 0 : fieldsPos + 1;
+        return field;
+
+    }
+
+    public void onClickPause(View view) {
+        mediaPlayer.pause();
     }
 }
